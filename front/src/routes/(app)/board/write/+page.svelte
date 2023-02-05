@@ -1,5 +1,6 @@
 <script>
-    import fastapi from "../../../../lib/api";
+    // import fastapi from "../../../../lib/api";
+    import fastapi from "$lib/api";
 
     let question = {};
     let content = "";
@@ -43,4 +44,8 @@
             글 발행하기
         </div>
     </form>
+
+    <div>
+        <!-- <img src="/testimage.jpg" alt=""> -->
+    </div>
 </div>

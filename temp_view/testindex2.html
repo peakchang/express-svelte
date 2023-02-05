@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <input type="file" name="file_name" id="file_name" multiple="multiple" />
+    <button type="button" id="upload">upload</button>
+    <img src="" id="preview">
+    <img src="" id="output">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        var resizeImage = function (settings) {
+            var file = settings.file;
+            var maxSize = settings.maxSize;
+            var reader = new FileReader();
+            var image = new Image();
+            var canvas = document.createElement('canvas');
+            
+            var resize = function () {
+
+                console.log(image.width);
+                var width = image.width;
+                var height = image.height;
+                if (width > height) {
+                    if (width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext('2d').drawImage(image, 0, 0, width, height);
+                var dataUrl = canvas.toDataURL('image/jpeg');
+                return dataURItoBlob(dataUrl);
+            };
+
+
+            return new Promise(function (ok, no) {
+                if (!file.type.match(/image.*/)) {
+                    no(new Error("Not an image"));
+                    return;
+                }
+                reader.onload = function (readerEvent) {
+                    image.onload = function () { return ok(resize()); };
+                    image.src = readerEvent.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
+        let fileMap = new Map();
+
+        $(document).ready(function () {
+            $("#file_name").on("change", select);
+            $("#upload").off("click").on("click", upload);
+        });
+
+        function select() {
+            $.each(this.files, function (index, file) {
+                console.log(file);
+                var reader = new FileReader();
+                // reader.onload = function (e) {
+                //     document.getElementById('preview').src = e.target.result;
+                // };
+                reader.readAsDataURL(file);
+
+                // resizing 이전 파일
+                fileMap.set("1_" + file.name, file);
+                resizeImage({
+                    file: file,
+                    maxSize: 300
+                }).then(function (resizedImage) {
+                    reader.onload = function (e) {
+                        console.log(resizedImage);
+                        console.log(URL.createObjectURL(resizedImage));
+                        document.getElementById('output').src = URL.createObjectURL(resizedImage);
+                    };
+                    reader.readAsDataURL(file);
+
+                    // resizing 이후 파일
+                    fileMap.set("2_" + file.name, resizedImage);
+                });
+            });
+
+        }
+
+        function upload() {
+            console.log("fileMap : " + fileMap.size);
+            console.log(fileMap);
+        }
+
+        var dataURItoBlob = function (dataURI) {
+            var bytes = dataURI.split(',')[0].indexOf('base64') >= 0 ?
+                atob(dataURI.split(',')[1]) :
+                unescape(dataURI.split(',')[1]);
+            var mime = dataURI.split(',')[0].split(':')[1].split(';')[0];
+            var max = bytes.length;
+            var ia = new Uint8Array(max);
+            for (var i = 0; i < max; i++)
+                ia[i] = bytes.charCodeAt(i);
+            return new Blob([ia], { type: 'image/jpeg' });
+        };
+    </script>
+</body>
+
+</html>

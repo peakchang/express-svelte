@@ -1,0 +1,80 @@
+<! DOCTYPE html>
+    <html lang="kr">
+
+    <head>
+        <meta charset="utf-8">
+        <title> 키보드와 하루 </title>
+    </head>
+
+    <body>
+
+        <!-- 기본 이미지 리사이징 -->
+        <img src="/testimage.jpg" alt="">
+        <canvas id="tcanvas" width="300" height="200" style=' border : 1px solid #000 ' ;> </canvas>
+        <canvas id="tcanvas_two" width="300" height="200" style=' border : 1px solid #000 ' ;> </canvas>
+        <script>
+            /*
+            캔버스 요소를 만들고 해당 캔버스에 미리 저장되어 있는 이미지 (testimage.jpg)를 넣기
+            */
+            var canvas = document.getElementById("tcanvas");
+            var context = canvas.getContext("2d");
+            var img = new Image(); //이미지 객체 생성
+            img.src = "/testimage.jpg"; //code.jpg라는 이미지 파일을 로딩 시작
+            img.onload = function () { //이미지 로딩 완료시 실행되는 함수 (불러올 이미지, 가로 시작위치, 세로 시작위치, width, height)
+                context.drawImage(img, 0, 0, 300, 200)
+                console.log(canvas);
+            }
+
+            var canvas_two = document.getElementById("tcanvas_two");
+            var context_two = canvas_two.getContext("2d");
+            var img_two = new Image(); //이미지 객체 생성
+            img_two.src = "/testimage.jpg"; //code.jpg라는 이미지 파일을 로딩 시작
+            img_two.onload = function () { //이미지 로딩 완료시 실행되는 함수
+                //이미지 비트맵에서 (30,30)을 중심으로 100*100 크기의 영역을캔버스에 전체에 그림
+                context_two.drawImage(img_two, 30, 30, 100, 100, 0, 0, canvas_two.width, canvas_two.height)
+            }
+        </script>
+
+        <div style="margin: 100px"></div>
+
+
+        <!-- input-file 을 통한 이미지 미리보기 기본 -->
+        <input type="file" class="test_file_input">
+        <div style="margin: 100px"></div>
+        <script>
+            const test_file_input = document.querySelector('.test_file_input');
+            test_file_input.addEventListener('change', function (e) {
+                const files = e.target.files;
+                console.log(files);
+                console.log(URL.createObjectURL(files[0]));
+                document.querySelector(".test_img").src = URL.createObjectURL(files[0]);
+            })
+        </script>
+
+        <img src="" alt="" class="test_img">
+
+        <div style="margin: 100px"></div>
+
+        <input type="file" class="test_file_input_resize"></body></br></br></br></br></br>
+        <script>
+            const test_file_input_resize = document.querySelector('.test_file_input_resize');
+            test_file_input_resize.addEventListener('change', function (e) {
+                const files = e.target.files;
+                var canvas = document.createElement("canvas");
+                var context = canvas.getContext("2d");
+                // var img = document.createElement("img");
+                var img = new Image(); //이미지 객체 생성
+                img.src = URL.createObjectURL(files[0]);
+                img.onload = () => {
+                    console.log(img);
+                    document.querySelector('.test_img_resize').src = img.src
+                    context.drawImage(img, 0, 0, 400, 600);
+                    console.log(canvas);
+                }
+            })
+        </script>
+
+        <img src="" alt="" class="test_img_resize">
+    </body>
+
+    </html>

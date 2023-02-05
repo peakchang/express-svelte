@@ -28,7 +28,7 @@
                 <li
                     class="ml-4 relative flex flex-wrap justify-center items-center"
                 >
-                    <a href="/board/write2">글쓰기</a>
+                    <a href="/board/write">글쓰기</a>
                 </li>
                 <li
                     class="ml-4 relative flex flex-wrap justify-center items-center"
