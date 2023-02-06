@@ -6,3 +6,4 @@ module.exports = mysql.createConnection({
     password: process.env.DBPWD,
     database: process.env.SCHEMA
 })
+

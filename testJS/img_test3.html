@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <input type="file" name="file_name" id="file_name" multiple="multiple" />
+    <button type="button" id="upload">upload</button>
+    <img src="" id="preview">
+    <img src="" id="output">
+    <script>
+        let fileMap = new Map();
+        const file_name = document.querySelector('#file_name');
+        file_name.addEventListener('change', function (e) {
+            // console.log(this.files[0]);
+            const file = this.files[0];
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                // console.log('alsdjfliajsf');
+                // console.log(e.target);
+                // document.getElementById('preview').src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+
+            fileMap.set("1_" + file.name, file);
+            console.log(fileMap);
+        })
+    </script>
+</body>
+
+</html>

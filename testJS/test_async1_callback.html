@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    sdfsdfsdf
+
+    <script>
+
+        // 일반적인 함수
+        function findUser_1(id) {
+            const user = {
+                id: id,
+                name: "User" + id,
+                email: id + "@test.com",
+            };
+            return user;
+        }
+
+        var user1 = findUser_1(1);
+        console.log("user:", user1);
+
+        console.log('*******************************');
+
+        // 함수 내에 콜백 함수를 넣었을때
+        function findUserAndCallBack(id, cb) {
+            const user = {
+                id: id,
+                name: "User" + id,
+                email: id + "@test.com",
+            };
+            console.log(typeof (cb));
+            cb(user);
+        }
+
+        findUserAndCallBack(1, function (user) {
+            console.log("user:", user);
+        });
+
+        console.log('*******************************');
+
+        function findUser_2(id) {
+            let user;
+            setTimeout(function () {
+                console.log("waited 0.1 sec.");
+                user = {
+                    id: id,
+                    name: `User + ${id}`,
+                    email: `${id} + @test.com`
+                }
+            }, 1000);
+            return user;
+        }
+
+        var user2 = findUser_2(1);
+        console.log("user : ", user2);
+
+        console.log('------------------------------');
+
+        function findUserAndCallBack2(id, cb) {
+            setTimeout(function () {
+                console.log("waited 0.1 sec.");
+                const user = {
+                    id: id,
+                    name: "User" + id,
+                    email: id + "@test.com",
+                };
+                cb(user);
+            }, 1500);
+        }
+
+        findUserAndCallBack2(1, function (user) {
+            console.log("user:", user);
+        });
+
+        console.log('-------------------------------');
+
+        setCallBack = (test, cb) => {
+            setTimeout(() => {
+                const result = test + 4 * 2;
+                cb(result)
+            },1000)
+        }
+
+        setCallBack(8, (get) => {
+            console.log(get);
+        })
+    </script>
+
+</body>
+
+</html>

@@ -1,5 +1,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const nunjucks = require('nunjucks');
 const morgan = require('morgan');
 const path = require('path');
 const session = require('express-session');
@@ -26,6 +27,17 @@ const apiRouter = require('./routes/api');
 const app = express();
 // passportConfig(); // 패스포트 설정
 app.set('port', process.env.PORT || 8001);
+// app.set('view engine', 'html');
+
+// function setUpNunjucks(expressApp) {
+//   let nunjucks_env = nunjucks.configure('views', {
+//     autoescape: true,
+//     express: app,
+//     watch: true,
+//   });
+// }
+
+// setUpNunjucks();
 
 if (process.env.NODE_ENV === 'production') {
   app.enable('trust proxy');
@@ -86,7 +98,7 @@ app.use((err, req, res, next) => {
   res.locals.message = err.message;
   res.locals.error = process.env.NODE_ENV !== 'production' ? err : {};
   res.status(err.status || 500);
-  res.render('error');
+  // res.render('error');
 });
 
 module.exports = app;

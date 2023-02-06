@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function fetchAuthorName_promise(postId) {
+            return fetch(`https://jsonplaceholder.typicode.com/posts/${postId}`).then((res) => res.json())
+                .then((post) => post.userId).then((userId) => {
+                    console.log(userId);
+                    return fetch(`https://jsonplaceholder.typicode.com/users/${userId}`)
+                        .then((res) => res.json())
+                        .then((user) => user.name);
+                });
+        }
+
+        fetchAuthorName_promise(1).then((name) => console.log("name:", name));
+
+        async function fetchAuthorName_async(postId) {
+            const postResponse = await fetch(
+                `https://jsonplaceholder.typicode.com/posts/${postId}`
+            );
+            const post = await postResponse.json();
+            const userId = post.userId;
+            const userResponse = await fetch(
+                `https://jsonplaceholder.typicode.com/users/${userId}`
+            );
+            const user = await userResponse.json();
+            return user.name;
+        }
+
+        fetchAuthorName_async(1).then((name) => console.log("name:", name));
+
+        async function testFunc(postId){
+            const name = await fetchAuthorName_promise(1);
+            console.log(name);
+        }
+
+        testFunc(1)
+
+    </script>
+</body>
+
+</html>
