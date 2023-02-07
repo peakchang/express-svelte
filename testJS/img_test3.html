@@ -6,29 +6,123 @@
 </head>
 
 <body>
+    <form action="">
+        <input type="file" id="chooseFile" name="chooseFile" class="img-input" required>
+        <button class="submit-btn">사진업로드</button>
+    </form>
+    <div class="img">
 
-    <input type="file" name="file_name" id="file_name" multiple="multiple" />
-    <button type="button" id="upload">upload</button>
-    <img src="" id="preview">
-    <img src="" id="output">
+    </div>
+
+
     <script>
-        let fileMap = new Map();
-        const file_name = document.querySelector('#file_name');
-        file_name.addEventListener('change', function (e) {
-            // console.log(this.files[0]);
-            const file = this.files[0];
-            var reader = new FileReader();
+        const realInput = document.querySelector(".img-input");
+        const imgTag = document.querySelector(".img");
 
-            reader.onload = function (e) {
-                // console.log('alsdjfliajsf');
-                // console.log(e.target);
-                // document.getElementById('preview').src = e.target.result;
+        const resizeImage = (settings) => {
+
+            console.log(`step2 : 셋팅을 불러와서 리사이즈 준비 시작!!`);
+            const file = settings.file;
+            const maxSize = settings.maxSize;
+            const reader = new FileReader();
+            const image = new Image();
+            const canvas = document.createElement("canvas");
+
+            console.log(`step3 : img / reader / canvas 정의 완료!`);
+
+            const dataURItoBlob = (dataURI) => {
+                const bytes =
+                    dataURI.split(",")[0].indexOf("base64") >= 0
+                        ? atob(dataURI.split(",")[1])
+                        : unescape(dataURI.split(",")[1]);
+                const mime = dataURI.split(",")[0].split(":")[1].split(";")[0];
+                const max = bytes.length;
+                const ia = new Uint8Array(max);
+                for (let i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
+                return new Blob([ia], { type: mime });
             };
-            reader.readAsDataURL(file);
 
-            fileMap.set("1_" + file.name, file);
-            console.log(fileMap);
-        })
+            const resize = () => {
+                console.log(`step5 : promise 내 콜백 함수 시작~`);
+                let width = image.width;
+                let height = image.height;
+                if (width > height) {
+                    if (width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                canvas.getContext("2d").drawImage(image, 0, 0, width, height);
+                console.log(`step6 : 캔버스에 이미지 그리기 완료`);
+
+                const dataUrl = canvas.toDataURL("image/jpeg");
+
+                console.log(`step7 : 이건 뭘까?`);
+                console.log(dataURItoBlob(dataUrl));
+                return dataURItoBlob(dataUrl);
+            };
+
+            return new Promise((ok, no) => {
+                console.log(`step4 : promise 함수 시작~`);
+                console.log(ok);
+                console.log(no);
+                if (!file) {
+                    return;
+                }
+                if (!file.type.match(/image.*/)) {
+                    no(new Error("Not an image"));
+                    return;
+                }
+                reader.onload = (readerEvent) => {
+                    image.onload = () => {
+                        return ok(resize());
+                    };
+                    image.src = readerEvent.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
+        const handleImgInput = (e) => {
+            console.log(`step1 : load image (change) f`);
+            const config = {
+                file: e.target.files[0],
+                maxSize: 350,
+            };
+            resizeImage(config)
+                .then((resizedImage) => {
+
+                    console.log(resizedImage);
+                    console.log(`step8 : 리턴 된 blob 이미지로 화면에 표시 시작`);
+                    const url = window.URL.createObjectURL(resizedImage);
+                    const img = document.createElement("img");
+                    img.setAttribute("src", url);
+                    img.className = "profile-img";
+                    img.style.display = "block";
+                    imgTag.appendChild(img);
+                })
+                .then(() => {
+                    console.log(imgTag);
+                    const img = document.querySelector(".profile-img");
+                    img.onload = () => {
+                        const widthDiff = (img.clientWidth - imgTag.offsetWidth) / 2;
+                        const heightDiff = (img.clientHeight - imgTag.offsetHeight) / 2;
+                        img.style.transform = `translate( -${widthDiff}px , -${heightDiff}px)`;
+                    };
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        };
+
+        realInput.addEventListener("change", handleImgInput);
     </script>
 </body>
 

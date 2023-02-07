@@ -14,6 +14,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script>
         var resizeImage = function (settings) {
+            console.log(`STEP3 : 리사이즈 이미지 promise 함수 시작~`);
             var file = settings.file;
             var maxSize = settings.maxSize;
             var reader = new FileReader();
@@ -21,7 +22,7 @@
             var canvas = document.createElement('canvas');
             
             var resize = function () {
-
+                console.log(`STEP4 : promise 함수 내 콜백함수 시작~`);
                 console.log(image.width);
                 var width = image.width;
                 var height = image.height;
@@ -40,6 +41,7 @@
                 canvas.height = height;
                 canvas.getContext('2d').drawImage(image, 0, 0, width, height);
                 var dataUrl = canvas.toDataURL('image/jpeg');
+                console.log(`STEP5 : blob로 변환된 값 리턴~~`);
                 return dataURItoBlob(dataUrl);
             };
 
@@ -65,28 +67,38 @@
         });
 
         function select() {
+            console.log(`START~~~~!!!!`);
+
+
             $.each(this.files, function (index, file) {
+                console.log(`STEP1 : 원본 이미지 미리보기`);
                 console.log(file);
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     document.getElementById('preview').src = e.target.result;
+                    console.log(`STEP2 : 원본 이미지 미리보기 완료!!!`);
                 };
                 reader.readAsDataURL(file);
 
                 // resizing 이전 파일
                 fileMap.set("1_" + file.name, file);
+
+
                 resizeImage({
                     file: file,
                     maxSize: 300
                 }).then(function (resizedImage) {
+                    console.log(resizedImage);
+                    console.log(`STEP6 : 리턴된 값 받아옴`);
                     reader.onload = function (e) {
-                        console.log(resizedImage);
+                        console.log(`STEP7 : 리턴된 이미지 작은 이미지에 미리보기 작성`);
                         console.log(URL.createObjectURL(resizedImage));
                         document.getElementById('output').src = URL.createObjectURL(resizedImage);
                     };
                     reader.readAsDataURL(file);
 
                     // resizing 이후 파일
+                    console.log(`STEP8 : filemap 에 리사이즈 이미지 담기`);
                     fileMap.set("2_" + file.name, resizedImage);
                 });
             });
@@ -96,6 +108,7 @@
         function upload() {
             console.log("fileMap : " + fileMap.size);
             console.log(fileMap);
+            console.log(`0번은 원본 이미지 / 1번은 리사이즈 한 이미지`);
         }
 
         var dataURItoBlob = function (dataURI) {
