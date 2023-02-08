@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <input type="file" class="input_file">
+    <img src="" alt="" class="test_img">
+    <img src="" alt="" class="test_img2">
+
+    <canvas id="canvas" width="300" height="300">
+        캔버스의 내용을 설명하는 대체 텍스트
+    </canvas>
+
+    <div class="test_image"></div>
+
+    <script>
+
+        var canvas = document.getElementById('canvas');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'green';
+        ctx.fillRect(10, 10, 100, 100);
+
+
+        const input_file = document.querySelector('.input_file');
+        input_file.onchange = (e) => {
+            var file = e.target.files[0];
+
+
+
+            // const file = settings.file;
+            const maxSize = 300;
+
+
+            const canvas = document.createElement("canvas");
+
+            const reader = new FileReader();
+            var image = new Image();
+            reader.readAsDataURL(e.target.files[0])
+            reader.onload = (readEvent) => {
+                console.log(readEvent.target.result);
+                image.src = readEvent.target.result;
+                document.querySelector('.test_image').append(image)
+                image.onload = (ii) => {
+                    console.log('img load');
+                }
+
+            }
+
+
+
+
+        }
+
+    </script>
+</body>
+
+</html>

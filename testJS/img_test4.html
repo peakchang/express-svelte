@@ -6,30 +6,22 @@
 </head>
 
 <body>
-    <form action="">
-        <input type="file" id="chooseFile" name="chooseFile" class="img-input" required>
-        <button class="submit-btn">사진업로드</button>
-    </form>
-    <div class="img">
 
-    </div>
-
-
+    <input type="file" name="file_name" id="file_name" class="img-input" multiple="multiple" />
+    <button type="button" id="upload">upload</button>
+    <img src="" id="preview">
+    <img src="" id="output">
+    <div class="img"></div>
     <script>
         const realInput = document.querySelector(".img-input");
         const imgTag = document.querySelector(".img");
 
         const resizeImage = (settings) => {
-
-            console.log(`step2 : 셋팅을 불러와서 리사이즈 준비 시작!!`);
             const file = settings.file;
             const maxSize = settings.maxSize;
             const reader = new FileReader();
-            c8
-            
+            const image = new Image();
             const canvas = document.createElement("canvas");
-
-            console.log(`step3 : img / reader / canvas 정의 완료!`);
 
             const dataURItoBlob = (dataURI) => {
                 const bytes =
@@ -44,7 +36,6 @@
             };
 
             const resize = () => {
-                console.log(`step5 : promise 내 콜백 함수 시작~`);
                 let width = image.width;
                 let height = image.height;
                 if (width > height) {
@@ -60,21 +51,12 @@
                 }
                 canvas.width = width;
                 canvas.height = height;
-                console.log(image);
                 canvas.getContext("2d").drawImage(image, 0, 0, width, height);
-                console.log(`step6 : 캔버스에 이미지 그리기 완료`);
-
                 const dataUrl = canvas.toDataURL("image/jpeg");
-
-                console.log(`step7 : 이건 뭘까?`);
-                console.log(dataURItoBlob(dataUrl));
                 return dataURItoBlob(dataUrl);
             };
 
             return new Promise((ok, no) => {
-                console.log(`step4 : promise 함수 시작~`);
-                console.log(ok);
-                console.log(no);
                 if (!file) {
                     return;
                 }
@@ -83,8 +65,8 @@
                     return;
                 }
                 reader.onload = (readerEvent) => {
-                    console.log(readerEvent);
                     image.onload = () => {
+                        console.log(ok);
                         return ok(resize());
                     };
                     image.src = readerEvent.target.result;
@@ -94,25 +76,22 @@
         };
 
         const handleImgInput = (e) => {
-            console.log(`step1 : load image (change) f`);
             const config = {
                 file: e.target.files[0],
-                maxSize: 350,
+                maxSize: 320,
             };
             resizeImage(config)
                 .then((resizedImage) => {
-
                     console.log(resizedImage);
-                    console.log(`step8 : 리턴 된 blob 이미지로 화면에 표시 시작`);
                     const url = window.URL.createObjectURL(resizedImage);
                     const img = document.createElement("img");
                     img.setAttribute("src", url);
                     img.className = "profile-img";
                     img.style.display = "block";
                     imgTag.appendChild(img);
+                    console.log(img);
                 })
                 .then(() => {
-                    console.log(imgTag);
                     const img = document.querySelector(".profile-img");
                     img.onload = () => {
                         const widthDiff = (img.clientWidth - imgTag.offsetWidth) / 2;
