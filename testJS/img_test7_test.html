@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="file" name="" id="img_input">
+    <div class="img_area">
+        <img src="" alt="" class="sample_img">
+    </div>
+
+    <script>
+        const img_input = document.querySelector('#img_input');
+        const maxWidth = 1200;
+        img_input.addEventListener('change', function (e) {
+            var file = this.files[0]
+            console.log(file);
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (r) {
+                var img = new Image();
+                img.src = r.target.result;
+                img.onload = function (e) {
+
+                    if (img.width >= maxWidth) {
+                        var share = img.width / maxWidth;
+                        var setHeight = Math.floor(img.height / share);
+                        var setWidth = maxWidth;
+                    } else {
+                        var setWidth = img.width;
+                        var setHeight = img.height;
+                    }
+
+                    console.log(setWidth);
+                    console.log(setHeight);
+
+                    var canvas = document.createElement("canvas");
+                    canvas.width = setWidth;
+                    canvas.height = setHeight;
+                    canvas.getContext("2d").drawImage(img, 0, 0, setWidth, setHeight)
+
+                    var getReImgUrl = canvas.toDataURL("image/webp");
+                    console.log(getReImgUrl);
+                    document.querySelector('.sample_img').src = getReImgUrl
+
+                    var resultImage = dataURItoBlob(getReImgUrl);
+                    console.log(resultImage);
+                }
+            }
+        })
+
+
+        const dataURItoBlob = (dataURI) => {
+            const bytes =
+                dataURI.split(",")[0].indexOf("base64") >= 0
+                    ? atob(dataURI.split(",")[1])
+                    : unescape(dataURI.split(",")[1]);
+            const mime = dataURI.split(",")[0].split(":")[1].split(";")[0];
+            const max = bytes.length;
+            const ia = new Uint8Array(max);
+            for (let i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
+            return new Blob([ia], { type: mime });
+        };
+    </script>
+
+</body>
+
+</html>

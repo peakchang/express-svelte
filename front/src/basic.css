@@ -2,6 +2,20 @@
     font-family: "SUIT";
 }
 
-.main_container{
-    max-width:60.625rem; margin: 0 auto;
+.main_container {
+    max-width: 60.625rem;
+    margin: 0 auto;
+}
+
+.ql-container.ql-snow {
+    height: auto;
+}
+
+.ql-editor {
+    height: 450px;
+    overflow-y: auto;
+}
+
+.ql-align-center img{
+    margin: 0 auto;
 }

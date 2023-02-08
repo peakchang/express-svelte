@@ -11,7 +11,8 @@
           container: [
             [{ header: [1, 2, false] }],
             ["bold", "italic", "underline"],
-            [{ list: "ordered" }, { list: "bullet" }],
+            [{ align: '' }, { align: 'center' }, { align: 'right' }, { align: 'justify' }],
+            // [{ list: "ordered" }, { list: "bullet" }],
             ["image", "code-block"],
           ],
           handlers: {
@@ -35,69 +36,57 @@
 
       // input change
       input.onchange = (e) => {
-        const files = e.target.files;
-        console.log(files);
+        const maxWidth = 1200;
+        const file = e.target.files[0];
+        console.log(file);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (r) {
+          const img = new Image();
+          img.src = r.target.result;
+          img.onload = function (e) {
+            if (img.width >= maxWidth) {
+              var share = img.width / maxWidth;
+              var setHeight = Math.floor(img.height / share);
+              var setWidth = maxWidth;
+            } else {
+              var setWidth = img.width;
+              var setHeight = img.height;
+            }
 
-        // 이미지 미리보기
-        console.log(URL.createObjectURL(files[0]));
-        document.querySelector(".test_img").src = URL.createObjectURL(files[0]);
-        var testImg = URL.createObjectURL(files[0]);
-        // URL.revokeObjectURL(files[0]);
+            var canvas = document.createElement("canvas");
+            canvas.width = setWidth;
+            canvas.height = setHeight;
+            canvas.getContext("2d").drawImage(img, 0, 0, setWidth, setHeight);
 
-        var img = document.createElement("img");
-        img.src = URL.createObjectURL(files[0]);
+            var getReImgUrl = canvas.toDataURL("image/webp");
 
-        const testImgRe = getThumbFile(img);
-        console.log(testImgRe);
+            const range = quill.getSelection();
+            quill.insertEmbed(range.index, "image", getReImgUrl);
 
-        document.querySelector(".test_img2").src = URL.createObjectURL(testImgRe);
+            const resultImage = dataURItoBlob(getReImgUrl);
+            console.log(resultImage);
+          };
+        };
       };
     }
   });
-
-  function getThumbFile(_IMG) {
-    //canvas에 이미지 객체를 리사이징해서 담는 과정
-    var canvas = document.createElement("canvas");
-    var MAX_WIDTH = 400;
-    var MAX_HEIGHT = 400;
-    var width = _IMG.width;
-    var height = _IMG.height;
-    canvas.getContext("2d").drawImage(_IMG, 0, 0, 400, 500);
-
-    //canvas의 dataurl를 blob(file)화 하는 과정
-    var dataURL = canvas.toDataURL("image/png"); //png => jpg 등으로 변환 가능
-    console.log(dataURL);
-    var byteString = atob(dataURL.split(",")[1]);
-
-    var mimeString = dataURL.split(",")[0].split(":")[1].split(";")[0];
-    var ab = new ArrayBuffer(byteString.length);
-    var ia = new Uint8Array(ab);
-    for (var i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-
-    //리사이징된 file 객체
-    var tmpThumbFile = new Blob([ab], { type: mimeString });
-    console.log(tmpThumbFile);
-
-    return tmpThumbFile;
-  }
 
   function testFunc(e) {
     console.log("어떻게 할까나~~~ ㅎㅎ");
   }
 
-  // function testimage(file) {
-  //   console.log(file);
-  //   let rawImage = new Image();
-
-  //   let canvas = document.createElement("canvas");
-  //   let ctx = canvas.getContext("2d");
-  //   console.log(rawImage);
-  //   rawImage.onload = function () {
-  //     console.log('온로드 함수 실행!!');
-  //   }
-  // }
+  const dataURItoBlob = (dataURI) => {
+    const bytes =
+      dataURI.split(",")[0].indexOf("base64") >= 0
+        ? atob(dataURI.split(",")[1])
+        : unescape(dataURI.split(",")[1]);
+    const mime = dataURI.split(",")[0].split(":")[1].split(";")[0];
+    const max = bytes.length;
+    const ia = new Uint8Array(max);
+    for (let i = 0; i < max; i++) ia[i] = bytes.charCodeAt(i);
+    return new Blob([ia], { type: mime });
+  };
 </script>
 
 <div class="main_container">
