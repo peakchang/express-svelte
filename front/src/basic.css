@@ -12,7 +12,7 @@
 }
 
 .ql-editor {
-    height: 450px;
+    height: 450px !important;
     overflow-y: auto;
 }
 
